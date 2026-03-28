@@ -1,5 +1,7 @@
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -11,77 +13,86 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={styles.nav}>
-      <Link to="/" style={styles.brand}>
-        🧠 DSA Revision Tracker
-      </Link>
-      <div style={styles.links}>
-        {user ? (
-          <>
-            <Link to="/" style={styles.link}>
-              Dashboard
-            </Link>
-            <Link to="/questions" style={styles.link}>
-              My Questions
-            </Link>
-            <span style={styles.username}>Hi, {user.name}!</span>
-            <button onClick={handleLogout} style={styles.button}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" style={styles.link}>
-              Login
-            </Link>
-            <Link to="/register" style={styles.link}>
-              Register
-            </Link>
-          </>
-        )}
-      </div>
-    </nav>
-  );
-};
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{ backgroundColor: "#fff", borderBottom: "1px solid #e0e0e0" }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <MenuBookIcon sx={{ color: "#1976d2" }} />
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              color: "#1a1a2e",
+              textDecoration: "none",
+              fontWeight: 700,
+              fontSize: "18px",
+            }}
+          >
+            DSA Revision Tracker
+          </Typography>
+        </Box>
 
-const styles = {
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "15px 30px",
-    backgroundColor: "#1a1a2e",
-    color: "white",
-  },
-  brand: {
-    color: "white",
-    textDecoration: "none",
-    fontSize: "20px",
-    fontWeight: "bold",
-  },
-  links: {
-    display: "flex",
-    alignItems: "center",
-    gap: "20px",
-  },
-  link: {
-    color: "white",
-    textDecoration: "none",
-    fontSize: "16px",
-  },
-  username: {
-    color: "#a8dadc",
-    fontSize: "14px",
-  },
-  button: {
-    backgroundColor: "#e63946",
-    color: "white",
-    border: "none",
-    padding: "8px 16px",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontSize: "14px",
-  },
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {user ? (
+            <>
+              <Button
+                component={Link}
+                to="/"
+                sx={{ color: "#555", textTransform: "none" }}
+              >
+                Dashboard
+              </Button>
+              <Button
+                component={Link}
+                to="/questions"
+                sx={{ color: "#555", textTransform: "none" }}
+              >
+                My Questions
+              </Button>
+              <Typography variant="body2" sx={{ color: "#888" }}>
+                Hi, {user.name}!
+              </Typography>
+              <Button
+                onClick={handleLogout}
+                variant="outlined"
+                size="small"
+                sx={{
+                  textTransform: "none",
+                  borderColor: "#e0e0e0",
+                  color: "#555",
+                }}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                component={Link}
+                to="/login"
+                sx={{ color: "#555", textTransform: "none" }}
+              >
+                Login
+              </Button>
+              <Button
+                component={Link}
+                to="/register"
+                variant="contained"
+                size="small"
+                sx={{ textTransform: "none" }}
+              >
+                Register
+              </Button>
+            </>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
 };
 
 export default Navbar;

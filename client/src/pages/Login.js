@@ -2,6 +2,15 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,100 +33,94 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>🧠 DSA Revision Tracker</h1>
-        <h2 style={styles.subtitle}>Login</h2>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <input
-            style={styles.input}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f5f5f5",
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          p: 5,
+          width: "100%",
+          maxWidth: 400,
+          border: "1px solid #e0e0e0",
+          borderRadius: 3,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <MenuBookIcon sx={{ fontSize: 40, color: "#1976d2", mb: 1 }} />
+          <Typography variant="h5" fontWeight={700} color="#1a1a2e">
+            DSA Revision Tracker
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>
+            Sign in to your account
+          </Typography>
+        </Box>
+
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
+          <TextField
+            label="Email"
             type="email"
-            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            fullWidth
+            size="small"
           />
-          <input
-            style={styles.input}
+          <TextField
+            label="Password"
             type="password"
-            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            fullWidth
+            size="small"
           />
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-        <p style={styles.switchText}>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{ mt: 1, textTransform: "none", py: 1.2 }}
+          >
+            {loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Sign In"
+            )}
+          </Button>
+        </Box>
+
+        <Typography
+          variant="body2"
+          textAlign="center"
+          mt={3}
+          color="text.secondary"
+        >
           Don't have an account?{" "}
-          <Link to="/register" style={styles.link}>
+          <Link to="/register" style={{ color: "#1976d2" }}>
             Register here
           </Link>
-        </p>
-      </div>
-    </div>
+        </Typography>
+      </Paper>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f0f2f5",
-  },
-  card: {
-    backgroundColor: "white",
-    padding: "40px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: "400px",
-  },
-  title: {
-    textAlign: "center",
-    color: "#1a1a2e",
-    marginBottom: "5px",
-    fontSize: "22px",
-  },
-  subtitle: {
-    textAlign: "center",
-    color: "#555",
-    marginBottom: "25px",
-    fontWeight: "normal",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
-  input: {
-    padding: "12px 15px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "15px",
-    outline: "none",
-  },
-  button: {
-    backgroundColor: "#1a1a2e",
-    color: "white",
-    border: "none",
-    padding: "13px",
-    borderRadius: "5px",
-    fontSize: "16px",
-    cursor: "pointer",
-    marginTop: "5px",
-  },
-  switchText: {
-    textAlign: "center",
-    marginTop: "20px",
-    color: "#555",
-  },
-  link: {
-    color: "#2980b9",
-  },
 };
 
 export default Login;

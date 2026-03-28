@@ -2,6 +2,15 @@ import { useState, useEffect } from "react";
 import { getQuestions } from "../utils/api";
 import QuestionCard from "../components/QuestionCard";
 import AddQuestionForm from "../components/AddQuestionForm";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Paper,
+  ToggleButton,
+  ToggleButtonGroup,
+  Divider,
+} from "@mui/material";
 
 const Questions = () => {
   const [questions, setQuestions] = useState([]);
@@ -27,87 +36,76 @@ const Questions = () => {
       ? questions
       : questions.filter((q) => q.difficulty === filter);
 
-  if (loading) return <div style={styles.loading}>Loading...</div>;
+  if (loading)
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
 
   return (
-    <div style={styles.container}>
+    <Box sx={{ maxWidth: 860, margin: "0 auto", padding: "30px 20px" }}>
+      <Typography variant="h5" fontWeight={700} color="#1a1a2e" mb={0.5}>
+        📚 My Questions
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={3}>
+        Manage your DSA questions and revision schedules.
+      </Typography>
+
       <AddQuestionForm onQuestionAdded={fetchQuestions} />
 
-      <div style={styles.filterRow}>
-        <h2 style={styles.heading}>📚 My Questions ({questions.length})</h2>
-        <div style={styles.filters}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography variant="body1" fontWeight={600} color="#1a1a2e">
+          {filtered.length} question{filtered.length !== 1 ? "s" : ""} found
+        </Typography>
+        <ToggleButtonGroup
+          value={filter}
+          exclusive
+          onChange={(e, val) => val && setFilter(val)}
+          size="small"
+        >
           {["All", "Easy", "Medium", "Hard"].map((f) => (
-            <button
+            <ToggleButton
               key={f}
-              onClick={() => setFilter(f)}
-              style={{
-                ...styles.filterBtn,
-                backgroundColor: filter === f ? "#1a1a2e" : "white",
-                color: filter === f ? "white" : "#1a1a2e",
-              }}
+              value={f}
+              sx={{ textTransform: "none", fontSize: 12, px: 2 }}
             >
               {f}
-            </button>
+            </ToggleButton>
           ))}
-        </div>
-      </div>
+        </ToggleButtonGroup>
+      </Box>
+
+      <Divider sx={{ mb: 2 }} />
 
       {filtered.length === 0 ? (
-        <div style={styles.emptyState}>
-          No questions found. Add your first question above! 👆
-        </div>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            border: "1px solid #e0e0e0",
+            borderRadius: 3,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body1" color="text.secondary">
+            No questions found. Add your first question above! 👆
+          </Typography>
+        </Paper>
       ) : (
         filtered.map((q) => (
           <QuestionCard key={q._id} question={q} onUpdate={fetchQuestions} />
         ))
       )}
-    </div>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "30px 20px",
-  },
-  filterRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px",
-    flexWrap: "wrap",
-    gap: "10px",
-  },
-  heading: {
-    color: "#1a1a2e",
-    margin: 0,
-  },
-  filters: {
-    display: "flex",
-    gap: "8px",
-  },
-  filterBtn: {
-    border: "1px solid #1a1a2e",
-    padding: "6px 14px",
-    borderRadius: "20px",
-    cursor: "pointer",
-    fontSize: "13px",
-  },
-  emptyState: {
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "10px",
-    textAlign: "center",
-    color: "#555",
-    fontSize: "16px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-  },
-  loading: {
-    textAlign: "center",
-    padding: "50px",
-    fontSize: "18px",
-  },
 };
 
 export default Questions;

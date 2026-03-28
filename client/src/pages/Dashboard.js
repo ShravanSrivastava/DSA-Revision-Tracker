@@ -2,6 +2,42 @@ import { useState, useEffect } from "react";
 import { getTodayRevisions, getQuestions } from "../utils/api";
 import QuestionCard from "../components/QuestionCard";
 import { useAuth } from "../context/AuthContext";
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  CircularProgress,
+  Divider,
+} from "@mui/material";
+import TodayIcon from "@mui/icons-material/Today";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+
+const StatCard = ({ icon, number, label, color }) => (
+  <Paper
+    elevation={0}
+    sx={{
+      p: 3,
+      border: "1px solid #e0e0e0",
+      borderRadius: 3,
+      flex: 1,
+      minWidth: 150,
+    }}
+  >
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+      <Box sx={{ color, fontSize: 36 }}>{icon}</Box>
+      <Box>
+        <Typography variant="h4" fontWeight={700} color="#1a1a2e">
+          {number}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {label}
+        </Typography>
+      </Box>
+    </Box>
+  </Paper>
+);
 
 const Dashboard = () => {
   const [todayQuestions, setTodayQuestions] = useState([]);
@@ -27,7 +63,12 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div style={styles.loading}>Loading...</div>;
+  if (loading)
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
 
   const totalDone = allQuestions.reduce(
     (acc, q) => acc + q.revisionPlan.filter((r) => r.status === "done").length,
@@ -39,93 +80,62 @@ const Dashboard = () => {
   );
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>👋 Welcome back, {user?.name}!</h1>
+    <Box sx={{ maxWidth: 860, margin: "0 auto", padding: "30px 20px" }}>
+      <Typography variant="h5" fontWeight={700} color="#1a1a2e" mb={0.5}>
+        👋 Welcome back, {user?.name}!
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={3}>
+        Here's your revision progress at a glance.
+      </Typography>
 
-      <div style={styles.statsRow}>
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>{allQuestions.length}</h2>
-          <p style={styles.statLabel}>Total Questions</p>
-        </div>
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>{todayQuestions.length}</h2>
-          <p style={styles.statLabel}>Due Today</p>
-        </div>
-        <div style={styles.statCard}>
-          <h2 style={styles.statNumber}>
-            {totalDone}/{totalRevisions}
-          </h2>
-          <p style={styles.statLabel}>Revisions Done</p>
-        </div>
-      </div>
+      <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap" }}>
+        <StatCard
+          icon={<LibraryBooksIcon fontSize="inherit" />}
+          number={allQuestions.length}
+          label="Total Questions"
+          color="#1976d2"
+        />
+        <StatCard
+          icon={<TodayIcon fontSize="inherit" />}
+          number={todayQuestions.length}
+          label="Due Today"
+          color="#ed6c02"
+        />
+        <StatCard
+          icon={<CheckCircleIcon fontSize="inherit" />}
+          number={`${totalDone}/${totalRevisions}`}
+          label="Revisions Done"
+          color="#2e7d32"
+        />
+      </Box>
 
-      <h2 style={styles.sectionTitle}>📅 Today's Revisions</h2>
+      <Divider sx={{ mb: 3 }} />
+
+      <Typography variant="h6" fontWeight={600} color="#1a1a2e" mb={2}>
+        📅 Today's Revisions
+      </Typography>
+
       {todayQuestions.length === 0 ? (
-        <div style={styles.emptyState}>
-          🎉 No revisions due today! Go add some questions.
-        </div>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            border: "1px solid #e0e0e0",
+            borderRadius: 3,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body1" color="text.secondary">
+            🎉 No revisions due today! Go add some questions.
+          </Typography>
+        </Paper>
       ) : (
         todayQuestions.map((q) => (
           <QuestionCard key={q._id} question={q} onUpdate={fetchData} />
         ))
       )}
-    </div>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "30px 20px",
-  },
-  heading: {
-    color: "#1a1a2e",
-    marginBottom: "25px",
-  },
-  statsRow: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap",
-  },
-  statCard: {
-    backgroundColor: "white",
-    padding: "20px 30px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-    flex: 1,
-    textAlign: "center",
-    minWidth: "150px",
-  },
-  statNumber: {
-    color: "#1a1a2e",
-    fontSize: "32px",
-    margin: "0 0 5px 0",
-  },
-  statLabel: {
-    color: "#777",
-    margin: 0,
-    fontSize: "14px",
-  },
-  sectionTitle: {
-    color: "#1a1a2e",
-    marginBottom: "15px",
-  },
-  emptyState: {
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "10px",
-    textAlign: "center",
-    color: "#555",
-    fontSize: "16px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-  },
-  loading: {
-    textAlign: "center",
-    padding: "50px",
-    fontSize: "18px",
-  },
 };
 
 export default Dashboard;

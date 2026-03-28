@@ -1,8 +1,20 @@
 import { useState } from "react";
 import { addQuestion } from "../utils/api";
 import toast from "react-hot-toast";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  MenuItem,
+  CircularProgress,
+  Collapse,
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const AddQuestionForm = ({ onQuestionAdded }) => {
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [topic, setTopic] = useState("");
@@ -26,12 +38,13 @@ const AddQuestionForm = ({ onQuestionAdded }) => {
         difficulty,
         intervals: intervalsArray,
       });
-      toast.success("Question added successfully!");
+      toast.success("Question added!");
       setTitle("");
       setUrl("");
       setTopic("");
       setDifficulty("Medium");
       setIntervals("1,7,30");
+      setOpen(false);
       onQuestionAdded();
     } catch (error) {
       toast.error("Failed to add question");
@@ -40,102 +53,108 @@ const AddQuestionForm = ({ onQuestionAdded }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>➕ Add New Question</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="Question title (e.g. Two Sum)"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="LeetCode URL (optional)"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-        <input
-          style={styles.input}
-          type="text"
-          placeholder="Topic (e.g. Arrays, Trees)"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-        />
-        <select
-          style={styles.input}
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value)}
+    <Paper
+      elevation={0}
+      sx={{
+        border: "1px solid #e0e0e0",
+        borderRadius: 3,
+        mb: 3,
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        onClick={() => setOpen(!open)}
+        sx={{
+          p: 2.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          cursor: "pointer",
+          "&:hover": { backgroundColor: "#f9f9f9" },
+        }}
+      >
+        <AddCircleOutlineIcon sx={{ color: "#1976d2" }} />
+        <Typography fontWeight={600} color="#1a1a2e">
+          Add New Question
+        </Typography>
+      </Box>
+
+      <Collapse in={open}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ p: 3, pt: 0, display: "flex", flexDirection: "column", gap: 2 }}
         >
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
-        <div style={styles.intervalContainer}>
-          <label style={styles.label}>
-            Revision intervals (days, comma separated):
-          </label>
-          <input
-            style={styles.input}
-            type="text"
-            placeholder="e.g. 1,7,30 means tomorrow, next week, next month"
+          <TextField
+            label="Question Title *"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            fullWidth
+            size="small"
+            placeholder="e.g. Two Sum"
+          />
+          <TextField
+            label="LeetCode URL"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            fullWidth
+            size="small"
+            placeholder="https://leetcode.com/problems/..."
+          />
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              label="Topic"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              fullWidth
+              size="small"
+              placeholder="e.g. Arrays, Trees"
+            />
+            <TextField
+              select
+              label="Difficulty"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              fullWidth
+              size="small"
+            >
+              <MenuItem value="Easy">Easy</MenuItem>
+              <MenuItem value="Medium">Medium</MenuItem>
+              <MenuItem value="Hard">Hard</MenuItem>
+            </TextField>
+          </Box>
+          <TextField
+            label="Revision Intervals (days, comma separated)"
             value={intervals}
             onChange={(e) => setIntervals(e.target.value)}
+            fullWidth
+            size="small"
+            helperText="e.g. 1,7,30 means revise after 1 day, 1 week, and 1 month"
           />
-        </div>
-        <button style={styles.button} type="submit" disabled={loading}>
-          {loading ? "Adding..." : "Add Question"}
-        </button>
-      </form>
-    </div>
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+            <Button
+              onClick={() => setOpen(false)}
+              sx={{ textTransform: "none", color: "#555" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{ textTransform: "none" }}
+            >
+              {loading ? (
+                <CircularProgress size={18} color="inherit" />
+              ) : (
+                "Add Question"
+              )}
+            </Button>
+          </Box>
+        </Box>
+      </Collapse>
+    </Paper>
   );
-};
-
-const styles = {
-  container: {
-    backgroundColor: "white",
-    padding: "25px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    marginBottom: "30px",
-  },
-  heading: {
-    marginBottom: "20px",
-    color: "#1a1a2e",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  input: {
-    padding: "10px 15px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    fontSize: "15px",
-    outline: "none",
-  },
-  intervalContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-  label: {
-    fontSize: "14px",
-    color: "#555",
-  },
-  button: {
-    backgroundColor: "#1a1a2e",
-    color: "white",
-    border: "none",
-    padding: "12px",
-    borderRadius: "5px",
-    fontSize: "16px",
-    cursor: "pointer",
-    marginTop: "5px",
-  },
 };
 
 export default AddQuestionForm;
