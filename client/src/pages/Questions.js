@@ -9,8 +9,10 @@ import {
   Paper,
   ToggleButton,
   ToggleButtonGroup,
-  Divider,
+  Container,
+  Grid,
 } from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 const Questions = () => {
   const [questions, setQuestions] = useState([]);
@@ -38,73 +40,129 @@ const Questions = () => {
 
   if (loading)
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
 
   return (
-    <Box sx={{ maxWidth: 860, margin: "0 auto", padding: "30px 20px" }}>
-      <Typography variant="h5" fontWeight={700} color="#1a1a2e" mb={0.5}>
-        📚 My Questions
-      </Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>
-        Manage your DSA questions and revision schedules.
-      </Typography>
+    <Container maxWidth="lg">
+      <Box sx={{ py: 4 }}>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            color="#1E293B"
+            sx={{ mb: 0.5 }}
+          >
+            📚 My Questions
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage your DSA questions and keep track of revision schedules
+          </Typography>
+        </Box>
 
-      <AddQuestionForm onQuestionAdded={fetchQuestions} />
+        {/* Add Question Form */}
+        <AddQuestionForm onQuestionAdded={fetchQuestions} />
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
-        <Typography variant="body1" fontWeight={600} color="#1a1a2e">
-          {filtered.length} question{filtered.length !== 1 ? "s" : ""} found
-        </Typography>
-        <ToggleButtonGroup
-          value={filter}
-          exclusive
-          onChange={(e, val) => val && setFilter(val)}
-          size="small"
-        >
-          {["All", "Easy", "Medium", "Hard"].map((f) => (
-            <ToggleButton
-              key={f}
-              value={f}
-              sx={{ textTransform: "none", fontSize: 12, px: 2 }}
-            >
-              {f}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-      </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {filtered.length === 0 ? (
-        <Paper
-          elevation={0}
+        {/* Filter Bar */}
+        <Box
           sx={{
-            p: 4,
-            border: "1px solid #e0e0e0",
-            borderRadius: 3,
-            textAlign: "center",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 2,
+            mb: 3,
+            flexWrap: "wrap",
           }}
         >
-          <Typography variant="body1" color="text.secondary">
-            No questions found. Add your first question above! 👆
-          </Typography>
-        </Paper>
-      ) : (
-        filtered.map((q) => (
-          <QuestionCard key={q._id} question={q} onUpdate={fetchQuestions} />
-        ))
-      )}
-    </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <FilterListIcon sx={{ color: "#5B7EFF" }} />
+            <Typography variant="body2" fontWeight={600} color="#1E293B">
+              Filter by difficulty
+            </Typography>
+          </Box>
+          <ToggleButtonGroup
+            value={filter}
+            exclusive
+            onChange={(e, val) => val && setFilter(val)}
+            size="small"
+            sx={{
+              "& .MuiToggleButton-root": {
+                textTransform: "none",
+                fontSize: 12,
+                fontWeight: 500,
+                px: 2,
+                border: "1px solid #E2E8F0",
+                color: "#64748B",
+                "&.Mui-selected": {
+                  backgroundColor: "#5B7EFF",
+                  color: "#FFFFFF",
+                  border: "1px solid #5B7EFF",
+                  "&:hover": {
+                    backgroundColor: "#5B7EFF",
+                  },
+                },
+              },
+            }}
+          >
+            {["All", "Easy", "Medium", "Hard"].map((f) => (
+              <ToggleButton key={f} value={f}>
+                {f}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Box>
+
+        {/* Questions List */}
+        {filtered.length === 0 ? (
+          <Paper
+            elevation={0}
+            sx={{
+              p: 4,
+              border: "2px dashed #E2E8F0",
+              borderRadius: 2,
+              textAlign: "center",
+              backgroundColor: "#F8FAFC",
+            }}
+          >
+            <Box sx={{ fontSize: 48, mb: 1 }}>📭</Box>
+            <Typography variant="body1" color="text.secondary" fontWeight={500}>
+              No questions found
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {filter === "All"
+                ? "Add your first question to get started!"
+                : `No ${filter.toLowerCase()} difficulty questions yet`}
+            </Typography>
+          </Paper>
+        ) : (
+          <Box>
+            <Box sx={{ mb: 2.5 }}>
+              <Typography variant="body2" fontWeight={600} color="#64748B">
+                {filtered.length} question{filtered.length !== 1 ? "s" : ""}{" "}
+                found
+              </Typography>
+            </Box>
+            <Grid container spacing={2}>
+              {filtered.map((q) => (
+                <Grid item xs={12} key={q._id}>
+                  <QuestionCard question={q} onUpdate={fetchQuestions} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 };
 
